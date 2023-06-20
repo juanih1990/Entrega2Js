@@ -1,195 +1,135 @@
-let productos = [
+const productos = [
     {
-        codigo: 300,
-        producto: "JUEGO DE MESA Y SILLAS",
-        cantidad: 5,
-        precio: 5000,
-        rubro: "HOGAR",
-        borrado: false
+        codigo: 1,
+        producto: "remera",
+        precio: 2500,
+        cantidad: 2 
     },
     {
-        codigo: 299,
-        producto: "NOTEBOOK",
-        cantidad: 8,
-        precio: 300000,
-        rubro: "ELECTRONICA",
-        borrado: false
+        codigo: 2,
+        producto: "Jean",
+        precio: 13500,
+        cantidad: 5 
     },
     {
-        codigo: 298,
-        producto: "PANTALON JEAN",
-        cantidad: 2,
-        precio: 3000,
-        rubro: "MODA",
-        borrado: false
-    },
-    {
-        codigo: 420,
-        producto: "TABLET",
-        cantidad: 10,
-        precio: 15000,
-        rubro: "ELECTRONICA",
-        borrado: false
+        codigo: 3,
+        producto: "buzo",
+        precio: 4500,
+        cantidad: 1 
     }
 ]
-let salir=false  //inicializo una variable para salir del menu
+const carrito = []
 
-/*Nota: la propiedad del objeto borrado = false la cree por que me gusta trabajar de esa forma. cambiandola por true si fue borrada. para el dia de mañana cuando trabaje
-con base de datos, hacer lo Mismo y si alguien borra algo sin querer siempre poder recuperar esa informacion */
+function listarProductos(array){
+    let listar = ""
+    array.forEach(element =>{
 
-
-/* En el sistema el dueño tiene que poder:
-   1: Cargar un producto.
-   2: Mostrar productos cargados
-   3: Buscar un producto en particular.
-   4: Filtrar productos. (por precio, por rubro)
-   5: Eliminar un producto.  
-   6: Salir del menu
-*/  
-function rubros(){
-    let rubro = Number(prompt("Ingrese el rubro: \n1: Hogar \n2: Electronica \n3: Moda \n0: Salir sin realizar cambios"))    
-                    if(rubro === 1){
-                          rubro= "HOGAR"
-                    }else if(rubro === 2){
-                          rubro="ELECTRONICA"
-                    }else if(rubro === 3){
-                          rubro= "MODA"
-                    }
-                    else{
-                        alert("El rubro ingresado no corresponde a ninguno con los trabajados por la empresa, por fabor vuelva a intentar cargarlo")
-                    }    
-                    if(rubro === "HOGAR" || rubro === "ELECTRONICA" || rubro === "MODA"){
-                        return rubro
-                    }    
-                    
+       listar = listar + "-------------------------------\n" + "codigo: " + element.codigo + "\nPRODUCTO: " + element.producto + "\nPRECIO: " + element.precio + "\nCANTIDAD: " + element.cantidad  + "\n"
+    })
+   return  alert(listar)
 }
- function cargarProducto(codigo){
-        if(productos.find((producto)=> producto.codigo == codigo) && productos.find((producto)=> producto.borrado == false)){ //veo si el codigo u id existe
-               //si el producto existe le sumo uno a la cantidad
-                let position = productos.findIndex((index)  => index.codigo == codigo)   // si existe busco su indice en el array
-                let newcant = Number(prompt("Tiene " + productos[position].cantidad + " de " + productos[position].producto + " en existencia. \n Ingrese la cantidad que desea agregar")) 
-                productos[position].cantidad = productos[position].cantidad + newcant  // dado el indice en el array le sumo la cantidad que deseo del producto q ya estaba en existencia
-        }
-        else{
-                //si no existe lo creo, para esto debo pedirle mas datos
-                let salir = false
-                let name = prompt("Ingrese el nombre del producto que desea cargar")
-                let precio = Number(prompt("Ingrese el precio del producto " + name.toUpperCase()))
-                let cantidad = Number(prompt("Ingrese la cantidad a agregar "))
-                let rubro = rubros()
-                if(rubro === "HOGAR" || rubro === "ELECTRONICA" || rubro === "MODA"){
-                    productos.push({        //Lo cargo al sistema, ahora tengo un nuevo producto
-                        codigo: codigo,
-                        producto: name.toUpperCase(),
-                        cantidad: cantidad,
-                        precio: precio,
-                        rubro: rubro.toUpperCase(),     
-                        borrado: false                  
-                    }) 
-                    alert("producto cargado con exito ")
-                }                      
-        }
- }  
- function listarProductos(){
-        for (const producto of productos) {   
-            if(producto != undefined && producto.borrado === false){
-                alert(producto.producto.toUpperCase() + "\n" + " ---------\n" + "CODIGO: " + producto.codigo + "\nPRODUCTO: " + producto.producto + "\nCANTIDAD: " + producto.cantidad + "\nPRECIO: " + producto.precio + "\nRubro: " + producto.rubro )
-            }
-       }
-
-       if(productos.length === 0){
-          alert("No tiene productos en stock")
-       }
- }
- function buscarProducto(codigo){
-    if(productos.find((producto)=> producto.codigo == codigo)){
-        let position = productos.findIndex((index)  => index.codigo == codigo)  
-        alert(productos[position].producto.toUpperCase() + "\n" + " ---------\n" + "CODIGO: " + productos[position].codigo + "\nPRODUCTO: " + productos[position].producto + "\nCANTIDAD: " + productos[position].cantidad + "\nPRECIO: " + productos[position].precio + "\nRubro: " + productos[position].rubro )
+function agregarCarrito(objeto){
+    let agotado = false
+    if(carrito.find(ele => ele.codigo == objeto.codigo)){
+        //Resto uno en cantidad en los productos en existencia
+        let positionProducto = productos.findIndex((index)  => index.codigo == objeto.codigo)       
+         if(productos[positionProducto].cantidad > 0){
+             //Sumo uno en cantidad en el carro si la cantidad en existencia es mayor a cero.
+             let position = carrito.findIndex((index)  => index.codigo == objeto.codigo)
+             carrito[position].cantidad++
+             agotado = false
+             productos[positionProducto].cantidad--
+         } 
+         else{
+            alert("Stock agotado!!!")
+            agotado = true
+         }  
+        
     }
- }
- function filtrarProductos(filtro){
-    if(filtro === 1){
-        let rubro = rubros()
-        const filtrado = productos.filter((producto) =>
-            producto.rubro == rubro)
-            for (const filtra of filtrado) {
-               if(filtra.borrado === false){
-                alert(filtra.producto.toUpperCase() + "\n" + " ---------\n" + "CODIGO: " + filtra.codigo + "\nPRODUCTO: " + filtra.producto + "\nCANTIDAD: " + filtra.cantidad + "\nPRECIO: " + filtra.precio + "\nRubro: " + filtra.rubro )      
-               } 
-            }
-            
-    }
-    else if(filtro ===2){ //ordena de menor a mayor
-        productos.sort((a,b)=>{
-            if(a.precio < b.precio){
-               return -1
-            }
-            if(a.precio > b.precio){
-               return 1
-            }
-            return 0
-          })
-          for (const filtra of productos) {
-            alert(filtra.producto.toUpperCase() + "\n" + " ---------\n" + "CODIGO: " + filtra.codigo + "\nPRODUCTO: " + filtra.producto + "\nCANTIDAD: " + filtra.cantidad + "\nPRECIO: " + filtra.precio + "\nRubro: " + filtra.rubro )
-        }
-    }
-    else if(filtro ===3){ //ordena de menor a mayor
-        productos.sort((a,b)=>{
-            if(a.precio > b.precio){
-               return -1
-            }
-            if(a.precio < b.precio){
-               return 1
-            }
-            return 0
-          })
-          for (const filtra of productos) {
-            alert(filtra.producto.toUpperCase() + "\n" + " ---------\n" + "CODIGO: " + filtra.codigo + "\nPRODUCTO: " + filtra.producto + "\nCANTIDAD: " + filtra.cantidad + "\nPRECIO: " + filtra.precio + "\nRubro: " + filtra.rubro )
-        }
-    }
-    else if(filtro === 0 ){
-        return
+    else if(productos.find(ele => ele.codigo == objeto.codigo)){
+        carrito.push({      //Sumo uno en cantidad al carrito
+            codigo: objeto.codigo,
+            producto: objeto.producto,
+            precio: objeto.precio,
+            cantidad: 1
+       })
+       //resto uno en cantidad a los productos en existencia
+       let positionProducto = productos.findIndex((index)  => index.codigo == objeto.codigo)  
+       productos[positionProducto].cantidad--
+    }  
+    if(agotado === false){
+        alert("producto agregado... ")  
+    }    
+}
+function mostrarCarrito(){
+    if(carrito.length > 0){
+        listarProductos(carrito)
     }
     else{
-        alert("Error: el numero ingresado no pertenece al menu de opciones")
+        alert("Carrito vacio, comience a comprar")
+    }   
+}
+function vaciarCarro(){
+     carrito.splice(0,carrito.length)  // Para eliminar todo el carrito.  desde la posicion 0 hasta el final del array
+     alert("Carrito vacio !!!")
+}
+function quitarCarrito(posicion){
+    // le paso la posicion de array del objeto que quiero quitar
+    if(carrito[posicion].cantidad > 1){           // si tienen mas de un objeto del mismo tipo en existencia, saco uno del carrito, ej 2 remeras saco una , me queda una en carro
+        carrito[posicion].cantidad--
+        alert("Se retiro una unidad del producto " + carrito[posicion].producto + " del carrito")
     }
-      
- }
- function eliminarProducto(codigos){
-    if(productos.find((producto)=> producto.codigo == codigos)){
-        let position = productos.findIndex((index)  => index.codigo == codigos)  
-        productos[position].borrado = true
+    else{                                        // si hay cantidad es igual a 1 , lo saco del carro.
+        carrito.splice(posicion,posicion + 1)
+        alert("El producto se retiro del carrito")
     }
- }
- function menu(){
-    //Vamos a mostrar un menu que permita introducir esas opciones
+    
+}
+function menuDeOpciones(){
+    let salir = false
     do{
-        let opciones = Number(prompt("Hola, Bienvenido al sistema 'Mi tiendita' ingrese:\n1: Para cargar un producto\n2: Para listar los productos cargados \n3: Para buscar producto \n4: Para filtrar productos \n5: Para eliminar un producto del stock\n6: para salir del sistema."))
-        if(opciones=== 1 ){
-            let cod = Number(prompt("Ingrese el codigo del producto"))
-            cargarProducto(cod)
+       
+        let opciones = Number(prompt("1: Listar Productos \n2: Agregar al carrito \n3: Mostrar carrito \n4: Vaciar carrito \n5: Quitar producto del carrito \n6: Para salir del programa"))
+        if(opciones=== 1){
+            listarProductos(productos)
         }
-        else if(opciones=== 2){
-            listarProductos()
+        else if(opciones === 2){
+            let codigoOption = Number(prompt("Ingrese el codigo del producto que desea agregar"))
+            if(productos.find(ele => ele.codigo == codigoOption)){
+                let position = productos.findIndex((index)  => index.codigo == codigoOption) 
+                agregarCarrito(productos[position])
+            }
+            else{
+                alert("Error: el objeto que intenta agregar no esta en existencia")
+            }
+            
         }
-        else if(opciones=== 3){
-            let buscarCod = Number(prompt("Ingrese el codigo del producto a buscar: \n(si no lo recurda puede listar los productos para buscar su codigo)"))
-            buscarProducto(buscarCod)
+        else if( opciones === 3){
+            mostrarCarrito()
         }
-        else if(opciones=== 4){
-            let filtro = Number(prompt("1: Filtrar por rubro \n2: Ordenar por Menor precio \n3: Ordenar por Mayor precio   \n0: Volver"))
-            filtrarProductos(filtro)
+        else if( opciones === 4){
+            vaciarCarro()
         }
-        else if(opciones === 5){
-            let buscarCod = Number(prompt("Ingrese el codigo del producto a Borrar: \n(si no lo recurda puede listar los productos para buscar su codigo)"))
-            eliminarProducto(buscarCod)
+        else if( opciones === 5){   
+            let cod = Number(prompt("Ingrese el codigo del producto que desea retirar del carrito"))  
+            if(carrito.find(ele => ele.codigo == cod)){
+                let position = carrito.findIndex((index)  => index.codigo == cod) 
+                quitarCarrito(position)
+            }
+            else{
+                alert("Error: el objeto que intenta quitar no esta en el carrito")
+            }      
+            
         }
-        else if(opciones === 6){
+        else if( opciones === 6){
+            alert("Gracias por usar nuestro programita...")
             salir = true
         }
         else{
-           alert("Error: ingrese un numero del menu de opciones.")
+            alert("Error intente nuevamente, ingrese solo opciones que figuran en el menu")
         }
-    }while(salir != true)
- }
- menu()
+  
+  }while(salir===false)
+}
+
+menuDeOpciones()
